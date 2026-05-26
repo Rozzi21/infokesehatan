@@ -24,8 +24,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -44,7 +48,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             InfokesehatanTheme {
-                HomeScreen()
+                Scaffold(
+                    bottomBar = {
+                        BottomNavigation()
+                    }
+                ) { padding ->
+                    HomeScreen(
+                        modifier = Modifier.padding(padding)
+                    )
+                }
             }
         }
     }
@@ -198,18 +210,85 @@ fun FavoriteCollectionsGrid(
 }
 
 @Composable
-fun HomeScreen() {
-    Column(modifier = Modifier) {
-        SearchBar()
-        Spacer(modifier = Modifier.height(16.dp))
-        AlignYourBodyElement(
-            drawable = R.drawable.ab1_inversions,
-            text = R.string.ab1_inversions
+fun HomeSection(
+    @StringRes title: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(modifier) {
+        Text(text = stringResource(title),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .paddingFromBaseline(top = 40.dp, bottom = 16.dp)
+                .padding(horizontal = 16.dp)
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        FavoriteCollectionCard(
-            drawable = R.drawable.fc2_nature_meditations,
-            text = R.string.fc2_nature_meditations
+        content()
+    }
+}
+
+
+
+@Composable
+fun HomeScreen(
+    modifier: Modifier = Modifier
+) {
+    Column(modifier.verticalScroll(rememberScrollState())) {
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+        SearchBar(
+            Modifier.padding(horizontal = 16.dp)
+        )
+        HomeSection(title = R.string.align_your_body) {
+            AlignYourBodyRow()
+        }
+        HomeSection(title = R.string.favorite_collections) {
+            FavoriteCollectionsGrid()
+        }
+        Spacer(modifier = Modifier.height(16.dp)
+        )
+    }
+}
+
+@Composable
+private fun BottomNavigation(modifier: Modifier = Modifier) {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = modifier
+    ) {
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Home,
+                    contentDescription = null
+                )
+            },
+            label = {
+                Text(
+                    stringResource(
+                        R.string.bottom_navigation_home
+                    )
+                )
+            },
+            selected = true,
+            onClick = {}
+        )
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null
+                )
+            },
+            label = {
+                Text(
+                    stringResource(
+                        R.string.bottom_navigation_profile
+                    )
+                )
+            },
+            selected = false,
+            onClick = {}
         )
     }
 }
